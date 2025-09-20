@@ -1,10 +1,12 @@
 //file:noinspection DependencyNotationArgument
 //file:noinspection GroovyAssignabilityCheck
 dependencies {
-    runtimeOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.5.4-GTNH:dev")
+    compileOnly("curse.maven:asjcore-445557:5155187")
+    compileOnly deobfCurse("alfheim-284811:5189478")
+
     implementation("maven.modrinth:baubles-expanded:2.1.4")
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.5.4-GTNH:dev")
     runtimeOnlyNonPublishable("curse.maven:endercore-231868:4671288")
-    runtimeOnlyNonPublishable("curse.maven:asjcore-445557:5155187")
 
     devOnlyNonPublishable deobfCurse("thaumcraft-223628:2227552")
     devOnlyNonPublishable deobfCurse("thaumicexploration-230969:2263414")
@@ -13,5 +15,4 @@ dependencies {
     devOnlyNonPublishable("curse.maven:cofhcore-69162:2388750")
     devOnlyNonPublishable("curse.maven:thermalfoundation-222880:2388752")
     devOnlyNonPublishable deobfCurse("thermalexpansion-69163:2388758")
-    devOnlyNonPublishable deobfCurse("alfheim-284811:5189478")
 }

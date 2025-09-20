@@ -4,6 +4,7 @@ import baubles.api.BaublesApi;
 import baubles.api.expanded.BaubleExpandedSlots;
 import baubles.api.expanded.BaubleItemHelper;
 import baubles.api.expanded.IBaubleExpanded;
+import com.creditcrab.baubletweaks.mixinplugin.BaubleTweaksLateMixins;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -51,7 +52,7 @@ public abstract class MixinItemFlightTiara extends ItemBauble implements IBauble
 
     @Override
     public String[] getBaubleTypes(ItemStack itemStack) {
-        return new String[]{BaubleExpandedSlots.wingsType};
+        return new String[]{"cosmetic"};
     }
 
     @Override
@@ -67,14 +68,7 @@ public abstract class MixinItemFlightTiara extends ItemBauble implements IBauble
      */
     @Overwrite
     public boolean shouldPlayerHaveFlight(EntityPlayer player){
-        ItemStack tiara = BaublesApi.getBaubles(player).getStackInSlot(BaubleExpandedSlots.getIndexOfTypeInRegisteredTypes(BaubleExpandedSlots.wingsType));
-        if (tiara != null && tiara.getItem() == this) {
-            int left = ItemNBTHelper.getInt(tiara, "timeLeft", 1200);
-            boolean flying = ItemNBTHelper.getBoolean(tiara, "flying", false);
-            return (left > (flying ? 0 : 120) || player.inventory.hasItem(ModItems.flugelEye)) && ManaItemHandler.requestManaExact(tiara, player, this.getCost(tiara, left), false);
-        } else {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -84,82 +78,7 @@ public abstract class MixinItemFlightTiara extends ItemBauble implements IBauble
     @Overwrite
     @SubscribeEvent
     public void updatePlayerFlyStatus(LivingEvent.LivingUpdateEvent event) {
-        if (event.entityLiving instanceof EntityPlayer player) {
-            ItemStack tiara = BaublesApi.getBaubles(player).getStackInSlot(BaubleExpandedSlots.getIndexesOfAssignedSlotsOfType(BaubleExpandedSlots.wingsType)[0]);
-            int left = ItemNBTHelper.getInt(tiara, "timeLeft", 1200);
-            //System.out.println("timeleft " + left);
-            if (playersWithFlight.contains(playerStr(player))) {
-                if (this.shouldPlayerHaveFlight(player)) {
-                    player.capabilities.allowFlying = true;
-                    if (player.capabilities.isFlying) {
-                        if (!player.worldObj.isRemote) {
-                            ManaItemHandler.requestManaExact(tiara, player, this.getCost(tiara, left), true);
-                        } else if (Math.abs(player.motionX) > 0.1 || Math.abs(player.motionZ) > 0.1) {
-                            double x = event.entityLiving.posX - 0.5;
-                            double y = event.entityLiving.posY - 1.7;
-                            double z = event.entityLiving.posZ - 0.5;
-                            float r = 1.0F;
-                            float g = 1.0F;
-                            float b = 1.0F;
-                            switch (tiara.getItemDamage()) {
-                                case 2:
-                                    r = 0.1F;
-                                    g = 0.1F;
-                                    b = 0.1F;
-                                    break;
-                                case 3:
-                                    r = 0.0F;
-                                    g = 0.6F;
-                                    break;
-                                case 4:
-                                    g = 0.3F;
-                                    b = 0.3F;
-                                    break;
-                                case 5:
-                                    r = 0.6F;
-                                    g = 0.0F;
-                                    b = 0.6F;
-                                    break;
-                                case 6:
-                                    r = 0.4F;
-                                    g = 0.0F;
-                                    b = 0.0F;
-                                    break;
-                                case 7:
-                                    r = 0.2F;
-                                    g = 0.6F;
-                                    b = 0.2F;
-                                    break;
-                                case 8:
-                                    r = 0.85F;
-                                    g = 0.85F;
-                                    b = 0.0F;
-                                    break;
-                                case 9:
-                                    r = 0.0F;
-                                    b = 0.0F;
-                            }
-
-                            for(int i = 0; i < 2; ++i) {
-                                Botania.proxy.sparkleFX(event.entityLiving.worldObj, x + Math.random() * (double)event.entityLiving.width, y + Math.random() * 0.4, z + Math.random() * (double)event.entityLiving.width, r, g, b, 2.0F * (float)Math.random(), 20);
-                            }
-                        }
-                    }
-                } else {
-                    if (!player.capabilities.isCreativeMode) {
-                        player.capabilities.allowFlying = false;
-                        player.capabilities.isFlying = false;
-                        player.capabilities.disableDamage = false;
-                    }
-
-                    playersWithFlight.remove(playerStr(player));
-                }
-            } else if (this.shouldPlayerHaveFlight(player)) {
-                playersWithFlight.add(playerStr(player));
-                player.capabilities.allowFlying = true;
-            }
-        }
-
+        // NOP
     }
 
     /**
@@ -170,49 +89,6 @@ public abstract class MixinItemFlightTiara extends ItemBauble implements IBauble
     @Overwrite
     @SideOnly(Side.CLIENT)
     public static void renderHUD(ScaledResolution resolution, EntityPlayer player, ItemStack stack) {
-        int u = Math.max(1, stack.getItemDamage()) * 9 - 9;
-        int v = 0;
-        Minecraft mc = Minecraft.getMinecraft();
-        mc.renderEngine.bindTexture(textureHud);
-        int xo = resolution.getScaledWidth() / 2 + 10;
-        int x = xo;
-        int y = resolution.getScaledHeight() - ConfigHandler.flightBarHeight;
-        if (player.getAir() < 300) {
-            y = resolution.getScaledHeight() - ConfigHandler.flightBarBreathHeight;
-        }
-
-        int left = ItemNBTHelper.getInt(stack, "timeLeft", 1200);
-        int segTime = 120;
-        int segs = left / segTime + 1;
-        int last = left % segTime;
-
-        int width;
-        for(width = 0; width < segs; ++width) {
-            float trans = 1.0F;
-            if (width == segs - 1) {
-                trans = (float)last / (float)segTime;
-                GL11.glEnable(3042);
-                GL11.glBlendFunc(770, 771);
-                GL11.glDisable(3008);
-            }
-
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, trans);
-            RenderHelper.drawTexturedModalRect(x, y, 0.0F, u, v, 9, 9);
-            x += 8;
-        }
-
-        if (player.capabilities.isFlying) {
-            width = ItemNBTHelper.getInt(stack, "dashCooldown", 0);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            if (width > 0) {
-                Gui.drawRect(xo, y - 2, xo + 80, y - 1, -2013265920);
-            }
-
-            Gui.drawRect(xo, y - 2, xo + width, y - 1, -1);
-        }
-
-        GL11.glEnable(3008);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.bindTexture(Gui.icons);
+        // NOP
     }
 }

@@ -40,6 +40,7 @@ public class BaubleTweaksLateMixins implements ILateMixinLoader {
         boolean capacitor;
         boolean alfheimShield;
         boolean botaniaCosmetics;
+        boolean disableTiaraFlight;
 
         var config = new Configuration(new File(Loader.instance().getConfigDir(), "BaubleTweaks.cfg"));
         config.load();
