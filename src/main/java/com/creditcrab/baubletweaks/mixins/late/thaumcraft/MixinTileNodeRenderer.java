@@ -30,7 +30,7 @@ import thaumcraft.common.tiles.TileNode;
 
 import static thaumcraft.client.renderers.tile.TileNodeRenderer.renderNode;
 
-@Mixin(value = TileNodeRenderer.class, priority = 1100)
+@Mixin(value = TileNodeRenderer.class, priority = 500)
 public abstract class MixinTileNodeRenderer extends TileEntitySpecialRenderer {
 
 

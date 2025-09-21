@@ -89,6 +89,7 @@ public class BaubleTweaksLateMixins implements ILateMixinLoader {
             capacitor = false;
         }
 
+
         if (Loader.isModLoaded("alfheim")) {
             alfheimShield = config.get("Alfheim", "Coat of Arms", true).getBoolean(true);
         } else {
@@ -103,6 +104,9 @@ public class BaubleTweaksLateMixins implements ILateMixinLoader {
             if (FMLLaunchHandler.side().isClient()) {
                 mixins.add("thaumcraft.MixinTileNodeRenderer");
                 mixins.add("thaumcraft.MixinRenderEventHandler");
+                if(Loader.isModLoaded("gadomancy")){
+                    mixins.add("gadomancy.MixinRenderTileNodeBasic");
+                }
             }
             mixins.add("thaumcraft.MixinItemGoggles");
             mixins.add("thaumcraft.MixinItemResource");
