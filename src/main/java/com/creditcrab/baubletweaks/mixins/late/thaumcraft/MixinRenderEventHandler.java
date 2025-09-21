@@ -3,6 +3,7 @@ package com.creditcrab.baubletweaks.mixins.late.thaumcraft;
 import baubles.api.BaublesApi;
 import baubles.api.expanded.BaubleExpandedSlots;
 import baubles.common.container.InventoryBaubles;
+import com.creditcrab.baubletweaks.BaubleTweaks;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -68,11 +69,11 @@ public abstract class MixinRenderEventHandler {
                     tagscale += 0.031F - tagscale / 10.0F;
                 }
 
-                this.drawTagsOnContainer((float)target.blockX + (float)dir.offsetX / 2.0F, (float)target.blockY + (float)dir.offsetY / 2.0F, (float)target.blockZ + (float)dir.offsetZ / 2.0F, ot, 220, dir, event.partialTicks);
+                this.drawTagsOnContainer((double)((float)target.blockX + (float)dir.offsetX / 2.0F), (double)((float)target.blockY + (float)dir.offsetY / 2.0F), (double)((float)target.blockZ + (float)dir.offsetZ / 2.0F), ot, 220, dir, event.partialTicks);
             }
         }
         InventoryBaubles baubles = (InventoryBaubles) BaublesApi.getBaubles((event.player) );
-        ItemStack baubleStack = baubles.func_70301_a(BaubleExpandedSlots.getIndexOfTypeInRegisteredTypes(BaubleExpandedSlots.headType));
+        ItemStack baubleStack = baubles.func_70301_a(BaubleTweaks.HEAD);
         Item baubleItem = baubleStack == null ? null : baubleStack.getItem();
         IGoggles bauble = baubleItem instanceof IGoggles ? (IGoggles) baubleItem : null;
 
@@ -96,7 +97,7 @@ public abstract class MixinRenderEventHandler {
                         tagscale += 0.031F - tagscale / 10.0F;
                     }
 
-                    this.drawTagsOnContainer(target.blockX, (float)target.blockY + (spaceAbove ? 0.4F : 0.0F) + shift, target.blockZ, ((IAspectContainer)te).getAspects(), 220, spaceAbove ? ForgeDirection.UP : ForgeDirection.getOrientation(event.target.sideHit), event.partialTicks);
+                    this.drawTagsOnContainer((double)target.blockX, (double)((float)target.blockY + (spaceAbove ? 0.4F : 0.0F) + shift), (double)target.blockZ, ((IAspectContainer)te).getAspects(), 220, spaceAbove ? ForgeDirection.UP : ForgeDirection.getOrientation(event.target.sideHit), event.partialTicks);
                 }
 
                 if (note >= 0) {
@@ -104,7 +105,7 @@ public abstract class MixinRenderEventHandler {
                         PacketHandler.INSTANCE.sendToServer(new PacketNote(target.blockX, target.blockY, target.blockZ, event.player.worldObj.provider.dimensionId));
                     }
 
-                    this.drawTextInAir(target.blockX, target.blockY + 1, target.blockZ, event.partialTicks, "Note: " + note);
+                    this.drawTextInAir((double)target.blockX, (double)(target.blockY + 1), (double)target.blockZ, event.partialTicks, "Note: " + note);
                 }
             }
         }

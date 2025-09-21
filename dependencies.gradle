@@ -14,5 +14,6 @@ dependencies {
     devOnlyNonPublishable deobfCurse("botania-225643:2283837")
     devOnlyNonPublishable("curse.maven:cofhcore-69162:2388750")
     devOnlyNonPublishable("curse.maven:thermalfoundation-222880:2388752")
+    devOnlyNonPublishable deobfCurse("gadomancy-237271:2338768")
     devOnlyNonPublishable deobfCurse("thermalexpansion-69163:2388758")
 }
